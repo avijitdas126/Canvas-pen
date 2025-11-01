@@ -12,6 +12,7 @@ import {
   Tally1,
   Trash2,
   Triangle,
+  Tv,
 } from "lucide-react";
 
 const Items = [
@@ -78,6 +79,12 @@ export const Setting = [
     icon: <ALargeSmall />,
     title: "Text",
     name: "text",
+  },
+   {
+    id: 27,
+    icon: <Tv />,
+    title: "WhiteBoard",
+    name: "whiteboard",
   },
    {
     id: 17,

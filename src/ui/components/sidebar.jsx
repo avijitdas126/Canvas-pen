@@ -1,8 +1,8 @@
 import { PenToolIcon } from "lucide-react";
 import { EraserBrush, ClippingGroup } from "@erase2d/fabric";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Items, { Setting } from "./Items";
-import { useCanvasEditor } from "../App";
+// import { useCanvasEditor } from "../App";
 import {
   Circle,
   Ellipse,
@@ -14,162 +14,202 @@ import {
 } from "fabric";
 export default function Sidebar() {
   const [select, setselect] = useState(9);
-  const [selectedShape, setSelectedShape] = useState(null);
+  // const [selectedShape, setSelectedShape] = useState(null);
   const [item, setitem] = useState(<></>);
   const [width, setwidth] = useState(20);
-  const { canvasEditor } = useCanvasEditor();
+  // const { canvasEditor } = useCanvasEditor();
   // PencilBrush()
   const [pos, setPos] = useState({ x: 3, y: 3 });
   const [dragging, setDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
-  const [color, setcolor] = useState("#000000");
+  // const [color, setcolor] = useState("#000000");
+  const onDrag = useRef(null);
 
-  const onMouseDown = (e) => {
+  const onMouseDownEvent = (e) => {
     setDragging(true);
-    setOffset({
-      x: e.clientX - pos.x,
-      y: e.clientY - pos.y,
+    window.electron.dragStart();
+
+    setOffset({ x: e.clientX, y: e.clientY });
+  };
+
+  const onMouseMoveEvent = (e) => {
+    if (!dragging) return;
+    window.electron.setWinPosition({
+      x: e.screenX - offset.x,
+      y: e.screenY - offset.y,
     });
   };
 
-  const onMouseUp = () => setDragging(false);
+  const onMouseUpEvent = () => {
+    setDragging(false);
 
-  const onMouseMove = (e) => {
-    if (dragging) {
-      setPos({
-        x: e.clientX - offset.x,
-        y: e.clientY - offset.y,
-      });
-    }
+    window.electron.dragEnd();
   };
-  useEffect(() => {
-    if (!canvasEditor) return;
-    canvasEditor.freeDrawingBrush.width = width;
-  }, [width]);
 
-  useEffect(() => {
-    if (!canvasEditor) return;
-    const onhandleShape = (opt) => {
-      if (!selectedShape) return;
-      const pointer = canvasEditor.getPointer(opt.e);
-      const { x, y } = pointer;
-      const properties = {
-        left: x,
-        top: y,
-        fill: "transparent",
-        stroke: color,
-        strokeWidth: 2,
-        erasable: true,
-      };
-      let shape = null;
-      switch (selectedShape) {
-        case "circle":
-          shape = new Circle({ ...properties, radius: 50 });
-          break;
-        case "rectangle":
-          shape = new Rect({ ...properties, width: 100, height: 60 });
+  const [isMouseDown, setisMouseDown] = useState(false);
 
-          break;
-        case "triangle":
-          shape = new Triangle({ ...properties, width: 100, height: 60 });
+  function enableSidebar() {
+    window.electron.allowSidebarClicks(true);
+  }
 
-          break;
-        case "ellipse":
-          shape = new Ellipse({
-            ...properties,
-            rx: 80,
-            ry: 40,
-          });
-
-          break;
-        case "line":
-          shape = new Line([x, y, x + 100, y + 50], {
-            stroke: color,
-            strokeWidth: 2,
-            erasable: true,
-          });
-
-          break;
-        default:
-          break;
-      }
-      if (shape) {
-        canvasEditor.add(shape);
-        canvasEditor.setActiveObject(shape);
-        canvasEditor.renderAll();
-      }
-      // ✅ After drawing, deselect the shape
-      setSelectedShape(null);
-    };
-    canvasEditor.on("mouse:down", onhandleShape);
-    return () => {
-      canvasEditor.off("mouse:down", onhandleShape);
-    };
-  }, [canvasEditor, selectedShape]);
-  useEffect(() => {
-    if (!canvasEditor) return;
-    canvasEditor.on("path:created", (e) => {
-      e.path.erasable = true;
-    });
-  }, [canvasEditor]);
-
-  function onhandleSetting(setting) {
-    switch (setting) {
-      case "clear":
-        canvasEditor.clear();
-        break;
-      case "cursor":
-        canvasEditor.isDrawingMode = false;
-        break;
-      case "pencil":
-        if (!canvasEditor) return;
-        canvasEditor.isDrawingMode = true;
-        const pencil = new PencilBrush(canvasEditor);
-        pencil.width = width;
-        pencil.color = color;
-        canvasEditor.freeDrawingBrush = pencil;
-        break;
-      case "eraser":
-        if (!canvasEditor) return;
-        canvasEditor.isDrawingMode = true;
-        const eraser = new EraserBrush(canvasEditor);
-        eraser.width = width;
-        canvasEditor.freeDrawingBrush = eraser;
-        break;
-      case "text":
-        if (!canvasEditor) return;
-        let text = new IText("Add Line", {
-          fontSize: 30,
-          fontWeight: "bold",
-          fill: color,
-          left: 100,
-          top: 100,
-          erasable: true,
-        });
-        canvasEditor.add(text);
-        break;
-      default:
-        break;
+  function disableSidebar() {
+    if (!isMouseDown) {
+      window.electron.allowSidebarClicks(false);
     }
   }
+
+  // const [bgColor, setBgColor] = useState("transparent");
+
+  // useEffect(() => {
+  // if (!canvasEditor) return;
+  // canvasEditor.backgroundColor = bgColor;
+  // canvasEditor.requestRenderAll();
+
+  // }, [
+  // canvasEditor,
+  //  bgColor]);
+
+  // useEffect(() => {
+  // if (!canvasEditor) return;
+  // canvasEditor.freeDrawingBrush.width = width;
+  // }, [width]);
+
+  // useEffect(() => {
+  // if (!canvasEditor) return;
+  // const onhandleShape = (opt) => {
+  // if (!selectedShape) return;
+  //     const pointer = canvasEditor.getPointer(opt.e);
+  //     const { x, y } = pointer;
+  //     const properties = {
+  //       left: x,
+  //       top: y,
+  //       fill: "transparent",
+  //       stroke: color,
+  //       strokeWidth: 2,
+  //       erasable: true,
+  //     };
+  //     let shape = null;
+  //     switch (selectedShape) {
+  //       case "circle":
+  //         shape = new Circle({ ...properties, radius: 50 });
+  //         break;
+  //       case "rectangle":
+  //         shape = new Rect({ ...properties, width: 100, height: 60 });
+
+  //         break;
+  //       case "triangle":
+  //         shape = new Triangle({ ...properties, width: 100, height: 60 });
+
+  //         break;
+  //       case "ellipse":
+  //         shape = new Ellipse({
+  //           ...properties,
+  //           rx: 80,
+  //           ry: 40,
+  //         });
+
+  //         break;
+  //       case "line":
+  //         shape = new Line([x, y, x + 100, y + 50], {
+  //           stroke: color,
+  //           strokeWidth: 2,
+  //           erasable: true,
+  //         });
+
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //     if (shape) {
+  //       canvasEditor.add(shape);
+  //       canvasEditor.setActiveObject(shape);
+  //       canvasEditor.renderAll();
+  //     }
+  //     // ✅ After drawing, deselect the shape
+  //     setSelectedShape(null);
+  //   };
+  //   canvasEditor.on("mouse:down", onhandleShape);
+  //   return () => {
+  //     canvasEditor.off("mouse:down", onhandleShape);
+  //   };
+  // }, [canvasEditor, selectedShape]);
+  // useEffect(() => {
+
+  // }, []);
+  // useEffect(() => {
+  //   if (!canvasEditor) return;
+  //   canvasEditor.on("path:created", (e) => {
+  //     e.path.erasable = true;
+  //   });
+  // }, [canvasEditor]);
+
+  // function onhandleSetting(setting) {
+  //   if (!canvasEditor || !window.electron) return;
+
+  //   switch (setting) {
+  //     case "clear":
+  //       canvasEditor.clear();
+  //       break;
+  //     case "cursor":
+  //       canvasEditor.isDrawingMode = false;
+  //       window.electron.setDrawMode(true);
+
+  //       break;
+  //     case "pencil":
+  //       canvasEditor.isDrawingMode = true;
+  //       const pencil = new PencilBrush(canvasEditor);
+  //       pencil.width = width;
+  //       pencil.color = color;
+  //       canvasEditor.freeDrawingBrush = pencil;
+
+  //       break;
+  //     case "eraser":
+  //       canvasEditor.isDrawingMode = true;
+  //       const eraser = new EraserBrush(canvasEditor);
+  //       eraser.width = width;
+  //       canvasEditor.freeDrawingBrush = eraser;
+
+  //       break;
+  //     case "text":
+  //       let text = new IText("Add Line", {
+  //         fontSize: 30,
+  //         fontWeight: "bold",
+  //         fill: color,
+  //         left: 100,
+  //         top: 100,
+  //         erasable: true,
+  //       });
+  //       canvasEditor.add(text);
+  //       break;
+  //     case "whiteboard":
+  //       setBgColor("#fafafa");
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
   return (
     <>
       <div
         className="sidebar"
         id="sidebar"
         style={{
-          left: pos.x,
-          top: pos.y,
           cursor: "pointer",
         }}
-        onMouseDown={onMouseDown}
-        onMouseUp={onMouseUp}
-        onMouseMove={onMouseMove}
+        onMouseEnter={enableSidebar}
+        onMouseLeave={disableSidebar}
       >
-        <center>
-          <PenToolIcon size={22} />
-        </center>
+        <div
+          className="dragArea"
+          onMouseDown={onMouseDownEvent}
+          onMouseUp={onMouseUpEvent}
+          onMouseMove={onMouseMoveEvent}
+        >
+          <div style={{ WebkitAppRegion: "no-drag" }} className="onDrag">
+            <PenToolIcon size={22} />
+          </div>
+        </div>
 
         <div className="item-list list">
           <ul>

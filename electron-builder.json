@@ -1,0 +1,13 @@
+{
+  "appId": "com.avijit-das.canvas-pen",
+  "files": [
+    "./src/electron",
+    "dist-react"
+  ],
+  "win": {
+    "target": [
+      "portable",
+      "nsis"
+    ]
+  }
+}

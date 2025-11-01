@@ -11,11 +11,11 @@ export default function () {
       const initCanvas = new Canvas(canvasRef.current, {
         width: window.innerWidth - 20,
         height: window.innerHeight - 20,
-        backgroundColor: "#fafafa",
+        backgroundColor: "transparent",
         isDrawingMode: false,
+        selection:false,
       });
       initCanvas.freeDrawingBrush = new PencilBrush(initCanvas);
-
       setcanvas(initCanvas);
       setcanvasEditor(initCanvas);
       // Optional: handle window resize
@@ -25,7 +25,6 @@ export default function () {
         initCanvas.renderAll();
       };
       window.addEventListener("resize", handleResize);
-
       return () => {
         initCanvas.dispose();
         window.removeEventListener("resize", handleResize);
