@@ -10,6 +10,10 @@ contextBridge.exposeInMainWorld("electron", {
       cb(data);
     });
   },
+  setRange:(range)=>ipcRenderer.send("set-range", range),
+  setColors:(color)=>ipcRenderer.send("set-colors", color),
+  toggleWin:(toggle)=>ipcRenderer.send("toggle-win", toggle),
+  getSelectedOption:(item) => ipcRenderer.send("get_selected_item", item),
   setDrawMode: (isActive) => ipcRenderer.send("set-draw-mode", isActive),
   allowSidebarClicks: (isActive) => ipcRenderer.send("toggle-mouse", isActive),
   dragStart: () => ipcRenderer.send("drag-start"),

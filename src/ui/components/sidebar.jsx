@@ -1,4 +1,4 @@
-import { PenToolIcon } from "lucide-react";
+import { Monitor, MonitorX, PenToolIcon } from "lucide-react";
 import { EraserBrush, ClippingGroup } from "@erase2d/fabric";
 import React, { useEffect, useRef, useState } from "react";
 import Items, { Setting } from "./Items";
@@ -14,6 +14,8 @@ import {
 } from "fabric";
 export default function Sidebar() {
   const [select, setselect] = useState(9);
+  const [toggle, settoggle] = useState(false);
+  const [isClose, setisClose] = useState(false);
   // const [selectedShape, setSelectedShape] = useState(null);
   const [item, setitem] = useState(<></>);
   const [width, setwidth] = useState(20);
@@ -23,7 +25,7 @@ export default function Sidebar() {
   const [dragging, setDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
-  // const [color, setcolor] = useState("#000000");
+  const [color, setcolor] = useState("#000000");
   const onDrag = useRef(null);
 
   const onMouseDownEvent = (e) => {
@@ -59,136 +61,6 @@ export default function Sidebar() {
     }
   }
 
-  // const [bgColor, setBgColor] = useState("transparent");
-
-  // useEffect(() => {
-  // if (!canvasEditor) return;
-  // canvasEditor.backgroundColor = bgColor;
-  // canvasEditor.requestRenderAll();
-
-  // }, [
-  // canvasEditor,
-  //  bgColor]);
-
-  // useEffect(() => {
-  // if (!canvasEditor) return;
-  // canvasEditor.freeDrawingBrush.width = width;
-  // }, [width]);
-
-  // useEffect(() => {
-  // if (!canvasEditor) return;
-  // const onhandleShape = (opt) => {
-  // if (!selectedShape) return;
-  //     const pointer = canvasEditor.getPointer(opt.e);
-  //     const { x, y } = pointer;
-  //     const properties = {
-  //       left: x,
-  //       top: y,
-  //       fill: "transparent",
-  //       stroke: color,
-  //       strokeWidth: 2,
-  //       erasable: true,
-  //     };
-  //     let shape = null;
-  //     switch (selectedShape) {
-  //       case "circle":
-  //         shape = new Circle({ ...properties, radius: 50 });
-  //         break;
-  //       case "rectangle":
-  //         shape = new Rect({ ...properties, width: 100, height: 60 });
-
-  //         break;
-  //       case "triangle":
-  //         shape = new Triangle({ ...properties, width: 100, height: 60 });
-
-  //         break;
-  //       case "ellipse":
-  //         shape = new Ellipse({
-  //           ...properties,
-  //           rx: 80,
-  //           ry: 40,
-  //         });
-
-  //         break;
-  //       case "line":
-  //         shape = new Line([x, y, x + 100, y + 50], {
-  //           stroke: color,
-  //           strokeWidth: 2,
-  //           erasable: true,
-  //         });
-
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //     if (shape) {
-  //       canvasEditor.add(shape);
-  //       canvasEditor.setActiveObject(shape);
-  //       canvasEditor.renderAll();
-  //     }
-  //     // ✅ After drawing, deselect the shape
-  //     setSelectedShape(null);
-  //   };
-  //   canvasEditor.on("mouse:down", onhandleShape);
-  //   return () => {
-  //     canvasEditor.off("mouse:down", onhandleShape);
-  //   };
-  // }, [canvasEditor, selectedShape]);
-  // useEffect(() => {
-
-  // }, []);
-  // useEffect(() => {
-  //   if (!canvasEditor) return;
-  //   canvasEditor.on("path:created", (e) => {
-  //     e.path.erasable = true;
-  //   });
-  // }, [canvasEditor]);
-
-  // function onhandleSetting(setting) {
-  //   if (!canvasEditor || !window.electron) return;
-
-  //   switch (setting) {
-  //     case "clear":
-  //       canvasEditor.clear();
-  //       break;
-  //     case "cursor":
-  //       canvasEditor.isDrawingMode = false;
-  //       window.electron.setDrawMode(true);
-
-  //       break;
-  //     case "pencil":
-  //       canvasEditor.isDrawingMode = true;
-  //       const pencil = new PencilBrush(canvasEditor);
-  //       pencil.width = width;
-  //       pencil.color = color;
-  //       canvasEditor.freeDrawingBrush = pencil;
-
-  //       break;
-  //     case "eraser":
-  //       canvasEditor.isDrawingMode = true;
-  //       const eraser = new EraserBrush(canvasEditor);
-  //       eraser.width = width;
-  //       canvasEditor.freeDrawingBrush = eraser;
-
-  //       break;
-  //     case "text":
-  //       let text = new IText("Add Line", {
-  //         fontSize: 30,
-  //         fontWeight: "bold",
-  //         fill: color,
-  //         left: 100,
-  //         top: 100,
-  //         erasable: true,
-  //       });
-  //       canvasEditor.add(text);
-  //       break;
-  //     case "whiteboard":
-  //       setBgColor("#fafafa");
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }
   return (
     <>
       <div
@@ -242,7 +114,9 @@ export default function Sidebar() {
                                   title={elem.title}
                                   onClick={() => {
                                     setitem(elem.icon);
-                                    setSelectedShape(elem.name);
+                                    window.electron.getSelectedOption({
+                                      shape: elem.name,
+                                    });
                                   }}
                                 >
                                   {elem.icon}
@@ -272,10 +146,29 @@ export default function Sidebar() {
                       title={e.title}
                       onClick={() => {
                         setselect(e.id);
-                        onhandleSetting(e.name);
+                        if (e.name == "close") {
+                          window.electron.getSelectedOption({
+                            tool: e.name,
+                            isClose: !isClose,
+                          });
+                          setisClose(!isClose);
+                        } else {
+                          window.electron.getSelectedOption({ tool: e.name });
+                        }
                       }}
                     >
-                      {e.icon}
+                      {e.name == "whiteboard" ? (
+                        <span
+                          onClick={() => {
+                            window.electron.toggleWin(!toggle);
+                            settoggle(!toggle);
+                          }}
+                        >
+                          {toggle ? <Monitor /> : e.icon}
+                        </span>
+                      ) : (
+                        e.icon
+                      )}
                     </p>
                     {e.name == "stroke" && (
                       <div className="subchild">
@@ -286,6 +179,7 @@ export default function Sidebar() {
                           value={width}
                           onChange={(event) => {
                             setwidth(event.target.value);
+                            window.electron.setRange(event.target.value);
                           }}
                         />
                       </div>
@@ -294,8 +188,10 @@ export default function Sidebar() {
                       <div className="subchild">
                         <input
                           type="color"
+                          value={color}
                           onChange={(event) => {
                             setcolor(event.target.value);
+                            window.electron.setColors(event.target.value);
                           }}
                         />
                       </div>

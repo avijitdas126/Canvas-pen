@@ -5,7 +5,10 @@ import {
   Dot,
   Egg,
   Eraser,
+  Hand,
   LucideMousePointer,
+  Monitor,
+  MonitorX,
   Pencil,
   RectangleHorizontal,
   ShapesIcon,
@@ -13,6 +16,7 @@ import {
   Trash2,
   Triangle,
   Tv,
+  X,
 } from "lucide-react";
 
 const Items = [
@@ -50,11 +54,17 @@ const Items = [
   },
 ];
 export const Setting = [
-   {
+  {
+    id: 30,
+    icon: <X />,
+    title: "Close",
+    name: "close",
+  },
+  {
     id: 9,
     icon: <LucideMousePointer />,
-    title: "Cursor",
-    name: "cursor",
+    title: "Select",
+    name: "select",
   },
   {
     id: 10,
@@ -63,40 +73,40 @@ export const Setting = [
     name: "pencil",
   },
   {
+    id: 13,
+    icon: <Dot />,
+    title: "Stroke",
+    name: "stroke",
+  },
+  {
+    id: 15,
+    icon: <ALargeSmall />,
+    title: "Text",
+    name: "text",
+  },
+  {
+    id: 20,
+    icon: <Brush />,
+    title: "Brush",
+    name: "color",
+  },
+  {
+    id: 17,
+    icon: <Eraser />,
+    title: "Eraser",
+    name: "eraser",
+  },
+  {
     id: 12,
     icon: <Trash2 />,
     title: "Clear",
     name: "clear",
   },
   {
-    id: 13,
-    icon: <Dot />,
-    title: "Stroke",
-    name: "stroke",
-  },
-    {
-    id: 15,
-    icon: <ALargeSmall />,
-    title: "Text",
-    name: "text",
-  },
-   {
     id: 27,
-    icon: <Tv />,
+    icon: <MonitorX />,
     title: "WhiteBoard",
     name: "whiteboard",
-  },
-   {
-    id: 17,
-    icon: <Eraser />,
-    title: "Eraser",
-    name: "eraser",
-  },
-   {
-    id: 20,
-    icon: <Brush  />,
-    title: "Brush",
-    name: "color",
   },
 ];
 export default Items;
