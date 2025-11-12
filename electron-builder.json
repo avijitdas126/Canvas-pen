@@ -1,13 +1,92 @@
 {
   "appId": "com.avijit-das.canvas-pen",
+  "productName": "Canvas Pen",
+  
   "files": [
     "./src/electron",
     "dist-react"
   ],
+
+  "extraResources": [
+    {
+    "from": "src/assets",
+    "to": "assets"
+  },
+    {
+      "from": "license.md",
+      "to": "license.md"
+    }
+  ],
+
   "win": {
     "target": [
-      "portable",
-      "nsis"
-    ]
+      "nsis",
+      "portable"
+    ],
+    "icon": "src/assets/pen.ico"
+  },
+
+  "nsis": {
+    "oneClick": false,
+    "installerIcon": "src/assets/pen.ico",
+    "uninstallerIcon": "src/assets/pen.ico",
+    "uninstallDisplayName": "Canvas Pen Uninstaller",
+    "license": "license.md",
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Canvas Pen"
+  },
+
+  "mac": {
+    "target": [
+      {
+        "target": "dmg",
+        "arch": ["x64", "arm64"]
+      }
+    ],
+    "icon": "src/assets/pen.icns",
+    "category": "public.app-category.graphics-design",
+    "hardenedRuntime": true,
+    "extendInfo": {
+      "NSMicrophoneUsageDescription": "Canvas Pen requires access to the microphone if you record audio input.",
+      "NSCameraUsageDescription": "Canvas Pen may request camera access for capturing content."
+    }
+  },
+
+  "dmg": {
+    "icon": "src/assets/pen.icns",
+    "iconSize": 100,
+    "contents": [
+      { "x": 130, "y": 220, "type": "file" },
+      { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+    ],
+    "window": {
+      "width": 540,
+      "height": 380
+    }
+  },
+
+  "linux": {
+    "target": [
+      "AppImage",
+      "deb"
+    ],
+    "icon": "src/assets",
+    "category": "Graphics",
+    "maintainer": "Avijit Das",
+    "description": "Canvas Pen – A modern creative drawing and design app."
+  },
+
+  "appImage": {
+    "artifactName": "Canvas-Pen-${version}.AppImage"
+  },
+
+  "deb": {
+    "priority": "optional",
+    "packageCategory": "graphics",
+    "synopsis": "Canvas Pen Drawing App",
+    "maintainer": "Avijit Das",
+    "description": "Canvas Pen – A modern creative drawing and design app."
   }
 }

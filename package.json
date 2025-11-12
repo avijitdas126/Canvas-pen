@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "main": "./src/electron/main.js",
+  "author":"Avijit Das",
+  "description": "Canvas pen",
   "scripts": {
     "dev": "npm-run-all --parallel build dev:electron",
     "dev:electron": "electron .",
@@ -17,7 +19,8 @@
     "fabric": "^6.7.1",
     "lucide-react": "^0.546.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-resizable": "^3.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

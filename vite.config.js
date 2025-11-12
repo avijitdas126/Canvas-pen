@@ -12,6 +12,7 @@ export default defineConfig({
       input:{
         canvas: resolve(__dirname,'canvas.html'),
         sidebar: resolve(__dirname,'index.html'),
+        
       }
     }
   },

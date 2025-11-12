@@ -18,5 +18,6 @@ contextBridge.exposeInMainWorld("electron", {
   allowSidebarClicks: (isActive) => ipcRenderer.send("toggle-mouse", isActive),
   dragStart: () => ipcRenderer.send("drag-start"),
   dragEnd: () => ipcRenderer.send("drag-end"),
+  // Align channel name with main process listener
   setWinPosition: (pos) => ipcRenderer.send("setWinPosition", pos),
 });

@@ -26,6 +26,7 @@ html, body {
   display: flex;
   justify-content: center;
 }
+
 /* Flex Layout Wrapper */
 .container {
   display: flex;
@@ -131,4 +132,24 @@ li {
 
 .item-list ul li:hover .subchild {
   display: flex;
+}
+.closed{
+  background: skyblue;
+  border: 2px solid white;
+}
+
+.capture{
+ position: absolute;
+ width: 400px;
+ height: 200px;
+ border: 2px dotted black;
+ top:30%;
+ bottom: 0;
+ left:35%;
+  resize: both;
+  overflow: auto;
+
+}
+.content{
+  position: relative;
 }

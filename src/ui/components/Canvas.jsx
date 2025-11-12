@@ -15,6 +15,7 @@ export default function () {
   const canvasRef = useRef();
   const [canvas, setcanvas] = useState(null);
   const [onshape, setshape] = useState(null);
+  const capture = useRef(null)
   const [ontool, settool] = useState(null);
   const [width, setwidth] = useState(20);
   const [color, setcolor] = useState("#000000");
@@ -24,7 +25,9 @@ export default function () {
     canvas.backgroundColor = bgColor;
     canvas.requestRenderAll();
   }, [canvas, bgColor]);
-
+useEffect(()=>{
+  
+})
   useEffect(() => {
     if (window.electronCanvas) {
       window.electronCanvas.sendSelectedItem((data) => {
@@ -88,6 +91,15 @@ export default function () {
       };
     }
   }, []);
+
+  useEffect(() => {
+    // capture.current.
+  
+    return () => {
+      
+    }
+  }, [capture.current])
+  
   //render shapes
   useEffect(() => {
     if (!canvas) return;
@@ -146,7 +158,7 @@ export default function () {
     return () => {
       canvas.off("mouse:down", onhandleShape);
     };
-  }, [canvas, onshape]);
+  }, [canvas, onshape, color]);
 
   useEffect(() => {
     if (!canvas) return;
@@ -156,6 +168,8 @@ export default function () {
   }, [canvas]);
   useEffect(() => {
     if (!canvas) return;
+    // collect handlers registered in this effect so we can remove them on cleanup
+    const _tempHandlers = [];
     // helpers to enable/disable selection on canvas objects
     const enableSelection = () => {
       try {
@@ -197,13 +211,34 @@ export default function () {
         canvas.freeDrawingBrush = pencil;
         disableSelection();
         break;
-      case "eraser":
+  case "eraser": {
+        // Enable eraser brush (if you want a drawing eraser). If you prefer
+        // single-click-to-remove behavior, we register a click handler below.
         canvas.isDrawingMode = true;
         const eraser = new EraserBrush(canvas);
         eraser.width = width;
         canvas.freeDrawingBrush = eraser;
+
+        // Named handler so we can remove it when the tool changes.
+        const eraserClickHandler = (opt) => {
+          const target = opt.target;
+          if (target && target.erasable !== false) {
+            canvas.remove(target);
+            canvas.requestRenderAll();
+          }
+        };
+
+  // Register the handler and keep a ref so we can remove it later.
+  canvas.on("mouse:down", eraserClickHandler);
+  _tempHandlers.push(eraserClickHandler);
+
         disableSelection();
+
+        // Cleanup for this case will be handled by the effect's return below
+        // via the _tempHandlers array.
         break;
+      }
+
       case "text":
         canvas.isDrawingMode = false;
         let text = new IText("Add Line", {
@@ -217,25 +252,34 @@ export default function () {
         canvas.add(text);
         disableSelection();
         break;
-        case "whiteboard":
-          canvas.isDrawingMode = false;
-          disableSelection();
-        break
+      case "whiteboard":
+        canvas.isDrawingMode = false;
+        disableSelection();
+        break;
       case "select":
         // enable object selection & interaction
         canvas.isDrawingMode = false;
         enableSelection();
         break;
-      default:
+        default:
         break;
     }
-  }, [canvas, ontool]);
+    // cleanup: remove any handlers we registered in this effect when
+    // the tool changes or the component unmounts
+    return () => {
+      try {
+        _tempHandlers.forEach((h) => canvas.off("mouse:down", h));
+      } catch (err) {
+        // ignore
+      }
+    };
+  }, [canvas, ontool, color, width]);
 
   return (
     <>
-      <center>
+      <div className="content">
         <canvas ref={canvasRef}></canvas>
-      </center>
+      </div>
     </>
   );
 }

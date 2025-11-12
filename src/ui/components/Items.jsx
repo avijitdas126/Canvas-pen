@@ -5,6 +5,7 @@ import {
   Dot,
   Egg,
   Eraser,
+  Eye,
   Hand,
   LucideMousePointer,
   Monitor,
@@ -17,6 +18,7 @@ import {
   Triangle,
   Tv,
   X,
+  Camera
 } from "lucide-react";
 
 const Items = [
@@ -56,7 +58,7 @@ const Items = [
 export const Setting = [
   {
     id: 30,
-    icon: <X />,
+    icon: <Eye />,
     title: "Close",
     name: "close",
   },
@@ -107,6 +109,12 @@ export const Setting = [
     icon: <MonitorX />,
     title: "WhiteBoard",
     name: "whiteboard",
+  },
+  {
+    id: 37,
+    icon: <Camera />,
+    title: "ScreenShot",
+    name: "capture",
   },
 ];
 export default Items;
